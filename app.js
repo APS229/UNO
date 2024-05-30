@@ -4,25 +4,22 @@ const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
-const Player = require('./player.js');
-const players = new Map();
+const UNO = require('./uno.js');
 
 app.use(express.static('public'));
 
+const Game = new UNO();
+
 io.on('connection', socket => {
-    const playersArray = [];
-    players.forEach((value, key) => {
-        playersArray.push({id: key, username: value.username});
-    });
     socket.on('username', username => {
-        socket.emit('players', playersArray);
-        players.set(socket.id, new Player(username));
+        socket.emit('players', UNO.players);
+        Game.addPlayer(socket.id, username);
         io.emit('newPlayer', { id: socket.id, username: username });
     });
 
     socket.on('disconnect', () => {
         io.emit('deletePlayer', socket.id);
-        players.delete(socket.id);
+        UNO.removePlayer(socket.id);
     });
 });
 
