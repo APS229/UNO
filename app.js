@@ -12,14 +12,14 @@ const Game = new UNO();
 
 io.on('connection', socket => {
     socket.on('username', username => {
-        socket.emit('players', UNO.players);
+        socket.emit('players', Game.players);
         Game.addPlayer(socket.id, username);
         io.emit('newPlayer', { id: socket.id, username: username });
     });
 
     socket.on('disconnect', () => {
         io.emit('deletePlayer', socket.id);
-        UNO.removePlayer(socket.id);
+        Game.removePlayer(socket.id);
     });
 });
 
