@@ -15,20 +15,23 @@ for (const color of COLORS) {
 class UNO {
     constructor() {
         this.name = 'UNO';
-        this.players = [];
+        this.players = {};
         this.hasStarted = false;
         this.turn = 0;
         this.topCard = '';
         this.turnOrder = [];
     }
+
     addPlayer(id, username) {
         this.players[id] = new Player(username);
     }
+
     removePlayer(id) {
         delete this.players[id];
     }
+
     shuffle(array) {
-        let currentIndex = players.length;
+        let currentIndex = array.length;
 
         while (currentIndex != 0) {
 
@@ -40,9 +43,26 @@ class UNO {
         }
         return array;
     }
-    start() {
+
+    random(array) {
+        return array[Math.floor(Math.random() * array.length)];
+    }
+
+    startGame() {
+        // if (this.hasStarted) return;
         this.hasStarted = true;
         this.turnOrder = this.shuffle(Object.keys(this.players));
+        console.log(this.turnOrder);
+        this.assignCards();
+    }
+
+    assignCards() {
+        for (const p in this.players) {
+            const player = this.players[p];
+            for (let i = 0; i < 7; i++) {
+                player.cards.push(this.random(CARDS));
+            }
+        }
     }
 }
 

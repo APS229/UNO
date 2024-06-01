@@ -12,6 +12,13 @@ window.onload = () => {
         let socket = io();
         socket.emit('username', username);
 
+        const start = document.getElementById('start');
+        start.onclick = () => {
+            const username = document.getElementById('input').value;
+            if (username !== 'APS') return;
+            socket.emit('start', true);
+        }
+
         socket.on('players', pl => {
             players = pl;
         });

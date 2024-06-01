@@ -21,6 +21,12 @@ io.on('connection', socket => {
         io.emit('deletePlayer', socket.id);
         Game.removePlayer(socket.id);
     });
+
+    socket.on('start', () => {
+        Game.startGame();
+    });
+
+    console.log(socket.id);
 });
 
 server.listen(5500, () => {
