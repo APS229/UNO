@@ -2,7 +2,7 @@ body {
     margin: 0;
 }
 
-div {
+#playerinfo {
     height: 100vh;
     width: 100%;
     display: flex;
@@ -10,13 +10,22 @@ div {
     align-items: center;
 }
 
-h2 {
-    color: red;
-    text-align: center;
+#players {
+    width: 100%;
+    height: 350px;
+    display: none;
+    justify-content: center;
 }
 
-canvas {
-    display: none;
+.player {
+    border: solid 1px black;
+    box-sizing: border-box;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 #start {
@@ -26,4 +35,19 @@ canvas {
 
 #disconnect {
     display: none;
+    color: red;
+    text-align: center;
+}
+
+p {
+    font-size: 25px;
+}
+
+b {
+    font-size: 30px;
+}
+
+p a {
+    font-size: 15px;
+    color: rgb(129, 129, 129)
 }

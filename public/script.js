@@ -8,10 +8,10 @@ window.onload = () => {
 
         socket.on('connect', () => {
             // display canvas and start button, remove other GUI
-            document.getElementById('playerInfo').style.display = 'none';
+            document.getElementById('playerinfo').style.display = 'none';
             document.getElementById('disconnect').style.display = 'none';
-            document.getElementById('canvas').style.display = 'block';
             document.getElementById('start').style.display = 'block';
+            document.getElementById('players').style.display = 'flex';
 
             socket.emit('username', username);
 
@@ -25,60 +25,41 @@ window.onload = () => {
                 socket.emit('start', true);
             }
 
-            socket.on('players', pl => {
-                players = pl;
+            socket.on('players', playerList => {
+                for (const p in playerList) {
+                    const player = playerList[p];
+                    players[p] = new Player(player.username);
+                    const playerElement = document.createElement('div');
+                    playerElement.id = p;
+                    playerElement.setAttribute('class', 'player');
+                    playerElement.innerHTML = `<p>${player.username}</p><b>${players[p].cardsLength}</b>`;
+                    document.getElementById('players').append(playerElement);
+                }
             });
 
             socket.on('newPlayer', player => {
                 players[player.id] = new Player(player.username);
-
+                const playerElement = document.createElement('div');
+                playerElement.id = player.id;
+                playerElement.setAttribute('class', 'player');
+                playerElement.innerText = player.username;
+                playerElement.innerHTML = `<p>${player.username}` + (player.id === socket.id ? '<a> (You)</a>' : '') + `</p><b>${players[player.id].cardsLength}</b>`;
+                document.getElementById('players').append(playerElement);
             });
 
             socket.on('deletePlayer', playerid => {
                 delete players[playerid];
+                document.getElementById('players').removeChild(document.getElementById(playerid));
             });
 
-            const canvas = document.getElementById('canvas');
-            canvas.width = innerWidth;
-            canvas.height = innerHeight;
-
-            // resize canvas when window is resized
-            window.onresize = () => {
-                canvas.width = innerWidth;
-                canvas.height = innerHeight;
-            };
-
-            // distance between all the displaying players
-            const distance = 320;
-
-            const context = canvas.getContext('2d');
-            context.font = "30px Arial";
-
-            function draw() {
-                // clear the canvas every frame
-                context.clearRect(0, 0, canvas.width, canvas.height);
-
-                let i = 0;
-                for (const p in players) {
-                    const player = players[p];
-                    // calculate the value of each player's position on the canvas
-                    const value = (Math.PI * 2) / Object.keys(players).length * i - (90 * Math.PI / 180);
-                    const x = Math.cos(value) * distance + (canvas.width / 2 - 100);
-                    const y = Math.sin(value) * distance + (canvas.height / 2 - 100);
-                    context.fillText(player.username, x, y);
-                    i++;
-                }
-
-                requestAnimationFrame(draw);
-            }
-
-            requestAnimationFrame(draw);
+            socket.on('start', () => {
+                
+            });
         });
 
         // display disconnected title, stop displaying canvas
         socket.on('disconnect', () => {
             document.getElementById('disconnect').style.display = 'block';
-            document.getElementById('canvas').style.display = 'none';
             document.getElementById('start').style.display = 'none';
         });
     }

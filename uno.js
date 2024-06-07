@@ -28,14 +28,25 @@ class UNO {
     }
 
     addPlayer(socket, username) {
+        if (this.hasStarted) return;
+        const players = {};
+        for (const p in this.players) {
+            if (p === 'cards') continue;
+            players[p] = this.players[p];
+        }
+        socket.emit('players', players);
         this.players[socket.id] = new Player(username);
-        socket.emit('players', this.players);
         this.io.emit('newPlayer', { id: socket.id, username: username });
     }
 
     removePlayer(id) {
-        delete this.players[id];
-        this.io.emit('deletePlayer', id);
+        if (this.players[id]) {
+            if (this.hasStarted) {
+                this.turnOrder.splice(this.turnOrder.indexOf(id), 1);
+            }
+            delete this.players[id];
+            this.io.emit('deletePlayer', id);
+        }
     }
 
     // randomize elements in an array
@@ -65,6 +76,7 @@ class UNO {
         await this.loadCards();
 
         this.hasStarted = true;
+        this.io.emit('start', true);
         this.turnOrder = this.shuffle(Object.keys(this.players));
         this.assignCards();
     }
@@ -78,7 +90,14 @@ class UNO {
                 this.cards.splice(this.cards.indexOf(card), 1);
                 player.cards.push(card);
             }
+            this.io.sockets.sockets.get(p).emit('cards', player.cards);
         }
+    }
+
+    nextTurn() {
+        const prevTurn = this.turnOrder[0];
+        this.turnOrder.splice(0, 1);
+        this.turnOrder.push(prevTurn);
     }
 }
 
