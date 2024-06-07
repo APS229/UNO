@@ -8,25 +8,21 @@ const UNO = require('./uno.js');
 
 app.use(express.static('public'));
 
-const Game = new UNO();
+const Game = new UNO(io);
 
 io.on('connection', socket => {
+    // only add players who have selected a username
     socket.on('username', username => {
-        socket.emit('players', Game.players);
-        Game.addPlayer(socket.id, username);
-        io.emit('newPlayer', { id: socket.id, username: username });
+        Game.addPlayer(socket, username);
     });
 
     socket.on('disconnect', () => {
-        io.emit('deletePlayer', socket.id);
         Game.removePlayer(socket.id);
     });
 
     socket.on('start', () => {
         Game.startGame();
     });
-
-    console.log(socket.id);
 });
 
 server.listen(5500, () => {

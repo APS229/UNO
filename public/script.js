@@ -4,65 +4,82 @@ window.onload = () => {
         const username = document.getElementById('input').value;
         if (!username) return;
 
-        document.getElementById('playerInfo').style.display = 'none';
-        document.getElementById('canvas').style.display = 'block';
-
-        let players = {};
-
         let socket = io();
-        socket.emit('username', username);
 
-        const start = document.getElementById('start');
-        start.onclick = () => {
-            const username = document.getElementById('input').value;
-            if (username !== 'APS') return;
-            socket.emit('start', true);
-        }
+        socket.on('connect', () => {
+            // display canvas and start button, remove other GUI
+            document.getElementById('playerInfo').style.display = 'none';
+            document.getElementById('disconnect').style.display = 'none';
+            document.getElementById('canvas').style.display = 'block';
+            document.getElementById('start').style.display = 'block';
 
-        socket.on('players', pl => {
-            players = pl;
-        });
+            socket.emit('username', username);
 
-        socket.on('newPlayer', player => {
-            players[player.id] = new Player(player.username);
+            let players = {};
 
-        });
+            // only let APS start the game
+            const start = document.getElementById('start');
+            start.onclick = () => {
+                const username = document.getElementById('input').value;
+                if (username !== 'APS') return;
+                socket.emit('start', true);
+            }
 
-        socket.on('deletePlayer', playerid => {
-            delete players[playerid];
-        });
+            socket.on('players', pl => {
+                players = pl;
+            });
 
-        const canvas = document.getElementById('canvas');
-        canvas.width = innerWidth;
-        canvas.height = innerHeight;
+            socket.on('newPlayer', player => {
+                players[player.id] = new Player(player.username);
 
-        window.onresize = () => {
+            });
+
+            socket.on('deletePlayer', playerid => {
+                delete players[playerid];
+            });
+
+            const canvas = document.getElementById('canvas');
             canvas.width = innerWidth;
             canvas.height = innerHeight;
-        };
 
-        const distance = 320;
+            // resize canvas when window is resized
+            window.onresize = () => {
+                canvas.width = innerWidth;
+                canvas.height = innerHeight;
+            };
 
-        const context = canvas.getContext('2d');
-        context.font = "30px Arial";
+            // distance between all the displaying players
+            const distance = 320;
 
-        function draw() {
-            context.clearRect(0, 0, canvas.width, canvas.height);
+            const context = canvas.getContext('2d');
+            context.font = "30px Arial";
 
-            let i = 0;
-            for (const p in players) {
-                const player = players[p];
-                const value = (Math.PI * 2) / Object.keys(players).length * i - (90 * Math.PI / 180);
-                const x = Math.cos(value) * distance + (innerWidth / 2 - 100);
-                const y = Math.sin(value) * distance + (innerHeight / 2 - 100);
-                context.fillText(player.username, x, y);
-                i++;
+            function draw() {
+                // clear the canvas every frame
+                context.clearRect(0, 0, canvas.width, canvas.height);
+
+                let i = 0;
+                for (const p in players) {
+                    const player = players[p];
+                    // calculate the value of each player's position on the canvas
+                    const value = (Math.PI * 2) / Object.keys(players).length * i - (90 * Math.PI / 180);
+                    const x = Math.cos(value) * distance + (canvas.width / 2 - 100);
+                    const y = Math.sin(value) * distance + (canvas.height / 2 - 100);
+                    context.fillText(player.username, x, y);
+                    i++;
+                }
+
+                requestAnimationFrame(draw);
             }
 
             requestAnimationFrame(draw);
-        }
+        });
 
-        requestAnimationFrame(draw);
-
+        // display disconnected title, stop displaying canvas
+        socket.on('disconnect', () => {
+            document.getElementById('disconnect').style.display = 'block';
+            document.getElementById('canvas').style.display = 'none';
+            document.getElementById('start').style.display = 'none';
+        });
     }
 }

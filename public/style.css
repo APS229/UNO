@@ -10,10 +10,20 @@ div {
     align-items: center;
 }
 
-h3 {
-    display: block;
+h2 {
+    color: red;
+    text-align: center;
 }
 
 canvas {
+    display: none;
+}
+
+#start {
+    display: none;
+    position: absolute;
+}
+
+#disconnect {
     display: none;
 }
