@@ -53,14 +53,16 @@ window.onload = () => {
             });
 
             socket.on('start', () => {
-                
+                document.getElementById('start').style.display = 'none';
             });
         });
 
-        // display disconnected title, stop displaying canvas
+        // display disconnected title, stop displaying the game
         socket.on('disconnect', () => {
             document.getElementById('disconnect').style.display = 'block';
             document.getElementById('start').style.display = 'none';
+            document.getElementById('players').style.display = 'none';
+            document.getElementById('players').innerHTML = '';
         });
     }
 }

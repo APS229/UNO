@@ -28,12 +28,12 @@ class UNO {
     }
 
     addPlayer(socket, username) {
-        if (this.hasStarted) return;
         const players = {};
         for (const p in this.players) {
             if (p === 'cards') continue;
             players[p] = this.players[p];
-        }
+            }
+        if (this.hasStarted) return;
         socket.emit('players', players);
         this.players[socket.id] = new Player(username);
         this.io.emit('newPlayer', { id: socket.id, username: username });
