@@ -1,4 +1,6 @@
 window.onload = () => {
+    let players = {};
+
     const connect = document.getElementById('connect');
     connect.onclick = () => {
         const username = document.getElementById('input').value;
@@ -15,8 +17,6 @@ window.onload = () => {
 
             socket.emit('username', username);
 
-            let players = {};
-
             // only let APS start the game
             const start = document.getElementById('start');
             start.onclick = () => {
@@ -26,7 +26,11 @@ window.onload = () => {
             }
 
             socket.on('players', playerList => {
+                // reset players on disconnection
+                players = {};
+                document.getElementById('players').innerHTML = '';
                 for (const p in playerList) {
+                    if (players[p]) continue;
                     const player = playerList[p];
                     players[p] = new Player(player.username);
                     const playerElement = document.createElement('div');
@@ -38,6 +42,7 @@ window.onload = () => {
             });
 
             socket.on('newPlayer', player => {
+                if (players[player.id]) return;
                 players[player.id] = new Player(player.username);
                 const playerElement = document.createElement('div');
                 playerElement.id = player.id;

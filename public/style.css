@@ -12,7 +12,7 @@ body {
 
 #players {
     width: 100%;
-    height: 350px;
+    height: 300px;
     display: none;
     justify-content: center;
 }
