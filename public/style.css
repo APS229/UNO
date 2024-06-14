@@ -10,11 +10,22 @@ body {
     align-items: center;
 }
 
+#game {
+    display: none;
+    height: 100vh;
+    width: 100%;
+}
+
 #players {
     width: 100%;
-    height: 300px;
-    display: none;
+    height: 30%;
+    display: flex;
     justify-content: center;
+}
+
+#self {
+    height: 70%;
+    width: 100%;
 }
 
 .player {
@@ -31,6 +42,8 @@ body {
 #start {
     display: none;
     position: absolute;
+    top: 0;
+    lefT: 0;
 }
 
 #disconnect {
@@ -40,14 +53,45 @@ body {
 }
 
 p {
-    font-size: 25px;
+    font-size: 30px;
 }
 
 b {
     font-size: 30px;
 }
 
-p a {
+b a {
     font-size: 15px;
-    color: rgb(129, 129, 129)
+    color: rgb(129, 129, 129);
+}
+
+
+.cards {
+    width: 80%;
+    height: 100%;
+    border: 1px solid black;
+    box-sizing: border-box;
+    float: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.cards h1 {
+    height: 120px;
+}
+
+#card {
+    width: 241.5px;
+    height: 362px;
+    background-image: url('./textures/uno-back.png');
+}
+
+#hand {
+    border: 1px solid black;
+    box-sizing: border-box;
+    width: 20%;
+    height: 100%;
+    float: left;
 }
