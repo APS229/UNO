@@ -1,6 +1,6 @@
 const Player = require('./player.js');
 
-const COLORS = ['yellow', 'blue', 'greem', 'red']
+const COLORS = ['red', 'yellow', 'green', 'blue'];
 
 class UNO {
     constructor(io) {
@@ -14,16 +14,22 @@ class UNO {
         this.io = io;
     }
 
-    // load all the cards in for the current game
+    // load all the cards for the current game
     async loadCards() {
-        this.cards = ['wild', 'wild +4'];
+        for (let i = 0; i < 4; i++) {
+            this.cards.push('wild');
+            this.cards.push('wild +4');
+        }
         for (const color of COLORS) {
-            for (let i = 0; i <= 9; i++) {
-                this.cards.push(color + ' ' + i);
+            for (let i = 0; i < 2; i++) {
+                for (let j = 1; j <= 9; j++) {
+                    this.cards.push(color + ' ' + j);
+                }
+                this.cards.push(color + ' skip');
+                this.cards.push(color + ' reverse');
+                this.cards.push(color + ' +2');
             }
-            this.cards.push(color + ' skip');
-            this.cards.push(color + ' reverse');
-            this.cards.push(color + ' +2');
+            this.cards.push(color + ' 0');
         }
     }
 
@@ -32,7 +38,7 @@ class UNO {
         for (const p in this.players) {
             if (p === 'cards') continue;
             players[p] = this.players[p];
-            }
+        }
         if (this.hasStarted) return;
         socket.emit('players', players);
         this.players[socket.id] = new Player(username);
@@ -79,6 +85,9 @@ class UNO {
         this.io.emit('start', true);
         this.turnOrder = this.shuffle(Object.keys(this.players));
         this.assignCards();
+        setInterval(() => {
+            this.io.emit('topCard', this.random(this.cards));
+        }, 1000);
     }
 
     // assign each player their starting 7 cards
