@@ -6,20 +6,21 @@ window.onload = () => {
     const tileHeight = 360;
 
     const cards = {};
+    let hasStarted = false;
 
     let j = 0;
     for (const color of COLORS) {
         cards[color] = {};
         for (let i = 0; i <= 9; i++) {
-            cards[color][i] = { x: i, y: j};
+            cards[color][i] = { x: i, y: j };
         }
-        cards[color].skip = { x: 10, y: j};
-        cards[color].reverse = { x: 11, y: j};
-        cards[color]['+2'] = { x: 12, y: j};
+        cards[color].skip = { x: 10, y: j };
+        cards[color].reverse = { x: 11, y: j };
+        cards[color]['+2'] = { x: 12, y: j };
         j++;
     }
     cards['wild'] = {
-        '0': { x: 13,  y: 0 },
+        '0': { x: 13, y: 0 },
         '+4': { x: 13, y: 4 }
     };
     function getPositionByCard(card) {
@@ -45,6 +46,11 @@ window.onload = () => {
             document.getElementById('disconnect').style.display = 'none';
             document.getElementById('start').style.display = 'block';
             document.getElementById('game').style.display = 'block';
+
+            const hand = document.getElementById('hand').children;
+            for (let i = 0; i < hand.length; i++) {
+                hand[i].style.left += 'calc(80% + ' + (i * (200 / hand.length)) + 'px)';
+            }
 
             socket.emit('username', username);
 
@@ -84,17 +90,28 @@ window.onload = () => {
             });
 
             socket.on('deletePlayer', playerid => {
+                const player = players[playerid];
+                document.getElementById(playerid).innerHTML = `<b>${player.username}</b><a class="disconnected"> (Disconnected)</a><p>${player.cardsLength} cards left</p>`;
                 delete players[playerid];
-                document.getElementById('players').removeChild(document.getElementById(playerid));
             });
 
             socket.on('start', () => {
                 document.getElementById('start').style.display = 'none';
+                hasStarted = true;
             });
 
             socket.on('topCard', card => {
                 document.getElementById('card').style.background = "url('./textures/cards.png')";
                 document.getElementById('card').style.backgroundPosition = getPositionByCard(card);
+            });
+
+            socket.on('hand', hand => {
+                players[socket.id].cards = hand;
+                const handHTML = document.getElementsByClassName('cards');
+                for (let i = 0; i < hand.length; i++) {
+                    handHTML[i].style.background = "url('./textures/cards.png')";
+                    handHTML[i].style.backgroundPosition = getPositionByCard(hand[i]);
+                }
             });
         });
 

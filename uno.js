@@ -39,8 +39,8 @@ class UNO {
             if (p === 'cards') continue;
             players[p] = this.players[p];
         }
-        if (this.hasStarted) return;
         socket.emit('players', players);
+        if (this.hasStarted) return;
         this.players[socket.id] = new Player(username);
         this.io.emit('newPlayer', { id: socket.id, username: username });
     }
@@ -85,9 +85,6 @@ class UNO {
         this.io.emit('start', true);
         this.turnOrder = this.shuffle(Object.keys(this.players));
         this.assignCards();
-        setInterval(() => {
-            this.io.emit('topCard', this.random(this.cards));
-        }, 1000);
     }
 
     // assign each player their starting 7 cards
@@ -99,7 +96,7 @@ class UNO {
                 this.cards.splice(this.cards.indexOf(card), 1);
                 player.cards.push(card);
             }
-            this.io.sockets.sockets.get(p).emit('cards', player.cards);
+            this.io.sockets.sockets.get(p).emit('hand', player.cards);
         }
     }
 
