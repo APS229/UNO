@@ -2,12 +2,11 @@ window.onload = () => {
     // ordered according to texture atlas
     const COLORS = ['red', 'yellow', 'green', 'blue'];
     // size of each card
-    const tileWidth = 240;
-    const tileHeight = 360;
+    const tileWidth = 120;
+    const tileHeight = 180;
 
     const cards = {};
-    let hasStarted = false;
-
+    
     let j = 0;
     for (const color of COLORS) {
         cards[color] = {};
@@ -30,8 +29,10 @@ window.onload = () => {
         console.log(card);
         return ('-' + cards[cardType][cardValue].x * tileWidth + 'px') + ' ' + ('-' + cards[cardType][cardValue].y * tileHeight + 'px');
     }
-
+    
     let players = {};
+    let prevTurn;
+    let hasStarted = false;
 
     const connect = document.getElementById('connect');
     connect.onclick = () => {
@@ -46,11 +47,6 @@ window.onload = () => {
             document.getElementById('disconnect').style.display = 'none';
             document.getElementById('start').style.display = 'block';
             document.getElementById('game').style.display = 'block';
-
-            const hand = document.getElementById('hand').children;
-            for (let i = 0; i < hand.length; i++) {
-                hand[i].style.left += 'calc(80% + ' + (i * (200 / hand.length)) + 'px)';
-            }
 
             socket.emit('username', username);
 
@@ -91,7 +87,10 @@ window.onload = () => {
 
             socket.on('deletePlayer', playerid => {
                 const player = players[playerid];
-                document.getElementById(playerid).innerHTML = `<b>${player.username}</b><a class="disconnected"> (Disconnected)</a><p>${player.cardsLength} cards left</p>`;
+                if (hasStarted)
+                    document.getElementById(playerid).innerHTML = `<b>${player.username}</b><a class="disconnected"> (Disconnected)</a><p>${player.cardsLength} cards left</p>`;
+                else 
+                    document.getElementById(playerid).remove();
                 delete players[playerid];
             });
 
@@ -103,16 +102,26 @@ window.onload = () => {
             socket.on('topCard', card => {
                 document.getElementById('card').style.background = "url('./textures/cards.png')";
                 document.getElementById('card').style.backgroundPosition = getPositionByCard(card);
+                document.getElementById('card').style.backgroundSize = '1400%';
             });
 
             socket.on('hand', hand => {
                 players[socket.id].cards = hand;
-                const handHTML = document.getElementsByClassName('cards');
+                const handHTML = document.getElementById('cards-row');
                 for (let i = 0; i < hand.length; i++) {
-                    handHTML[i].style.background = "url('./textures/cards.png')";
-                    handHTML[i].style.backgroundPosition = getPositionByCard(hand[i]);
+                    const card = document.createElement('div');
+                    card.setAttribute('class', 'cards');
+                    card.style.backgroundPosition = getPositionByCard(hand[i]);
+                    card.style.left = (i * 40) + 'px';
+                    handHTML.append(card);
                 }
             });
+            
+            socket.on('turn', playerid => {
+                document.getElementById(playerid).innerHTML += '<b>(turn)</b>';
+                if (prevTurn) document.getElementById(prevTurn).lastChild.remove();
+                prevTurn = playerid;
+            })
         });
 
         // display disconnected title, stop displaying the game

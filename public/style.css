@@ -19,13 +19,13 @@ body {
 
 #players {
     width: 100%;
-    height: 30%;
+    height: 15%;
     display: flex;
     justify-content: center;
 }
 
 #self {
-    height: 70%;
+    height: 85%;
     width: 100%;
 }
 
@@ -54,11 +54,11 @@ body {
 }
 
 p {
-    font-size: 30px;
+    font-size: 20px;
 }
 
 b {
-    font-size: 30px;
+    font-size: 20px;
 }
 
 b a {
@@ -71,7 +71,7 @@ b a {
 }
 
 #topcard {
-    width: 80%;
+    width: 40%;
     height: 100%;
     border: 1px solid black;
     box-sizing: border-box;
@@ -86,29 +86,40 @@ b a {
     height: 120px;
 }
 
-#card {
-    width: 241.5px;
-    height: 362px;
+#topcard #card {
+    width: 120px;
+    height: 180px;
     background-image: url('./textures/uno-back.png');
+    background-size: 100%;
 }
 
 #hand {
     border: 1px solid black;
     box-sizing: border-box;
-    width: 20%;
+    width: 60%;
     height: 100%;
     float: left;
 }
 
+#cards-row {
+    width: 100%;
+    height: 95%;
+    margin-top: 5%;
+    position: relative;
+}
+
 .cards {
-    background: url('./textures/uno-back.png');
-    width: 241.5px;
-    height: 362px;
+    width: 120px;
+    height: 180px;
+    top: 0;
+    background-size: 1400%;
+    background-image: url('./textures/cards.png');
     position: absolute;
-    bottom: 0;
-    left: 80%;
+    transition: top 0.25s;
+    border-radius: 25px;
 }
 
 .cards:hover {
-    bottom: 80px;
+    top: -40px;
+    cursor: pointer;
 }

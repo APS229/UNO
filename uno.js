@@ -40,7 +40,7 @@ class UNO {
             players[p] = this.players[p];
         }
         socket.emit('players', players);
-        if (this.hasStarted) return;
+        if (this.hasStarted) return socket.emit('topCard', this.topCard);
         this.players[socket.id] = new Player(username);
         this.io.emit('newPlayer', { id: socket.id, username: username });
     }
@@ -84,6 +84,7 @@ class UNO {
         this.hasStarted = true;
         this.io.emit('start', true);
         this.turnOrder = this.shuffle(Object.keys(this.players));
+        this.io.emit('turn', this.turnOrder[0]);
         this.assignCards();
     }
 
@@ -92,12 +93,18 @@ class UNO {
         for (const p in this.players) {
             const player = this.players[p];
             for (let i = 0; i < 7; i++) {
-                const card = this.random(this.cards);
-                this.cards.splice(this.cards.indexOf(card), 1);
-                player.cards.push(card);
+                player.cards.push(this.getRandomCard());
             }
             this.io.sockets.sockets.get(p).emit('hand', player.cards);
         }
+        this.topCard = this.getRandomCard();
+        this.io.emit('topCard', this.topCard);
+    }
+
+    getRandomCard() {
+        const card = this.random(this.cards);
+        this.cards.splice(this.cards.indexOf(card), 1);
+        return card;
     }
 
     nextTurn() {
