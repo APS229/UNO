@@ -7,7 +7,6 @@ class UNO {
         this.name = 'UNO';
         this.players = {};
         this.hasStarted = false;
-        this.turn = 0;
         this.topCard = '';
         this.turnOrder = [];
         this.cards = [];
@@ -107,11 +106,46 @@ class UNO {
         return card;
     }
 
-    nextTurn() {
-        const prevTurn = this.turnOrder[0];
-        this.turnOrder.splice(0, 1);
-        this.turnOrder.push(prevTurn);
+    playCard(id, card) {
+        if (this.turnOrder[0] !== id) return;
+        card = card.split(' ');
+        let cardColor = card[0];
+        if (cardColor === 'wild') {
+            if (card[1] === '+4') {
+                if (!this.players[id].cards.includes('wild +4')) return;
+                cardColor = card[2];
+            }
+            else {
+                if (!this.players[id].cards.includes('wild')) return;
+                cardColor = card[1];
+            }
+            cardColor = card[1] === '+4' ? card[2] : card[1];
+        }
+
+        else {
+            if (!this.players[id].cards.includes(card.join(' '))) return;
+            let topCard = this.topCard.split(' ');
+            let topCardColor = topCard[0];
+            if (topCardColor === 'wild') {
+                topCardColor = topCard[1] === '+4' ? topCard[2] : topCard[1];
+                if (cardColor !== topCardColor) return;
+            }
+            else {
+                if (card[1] !== topCard[1] && cardColor !== topCardColor) return;
+            }
+        }
+        this.topCard = card.join(' ');
+        this.players[id].cards.splice(this.players[id].cards.indexOf(this.topCard), 1);
+        this.io.emit('topCard', this.topCard, id);
+        this.nextTurn();
     }
+
+    nextTurn() {
+        const prevTurn = this.turnOrder.shift();
+        this.turnOrder.push(prevTurn);
+        this.io.emit('turn', this.turnOrder[0]);
+    }
+
 }
 
 module.exports = UNO;

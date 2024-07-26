@@ -1,6 +1,7 @@
 body {
     margin: 0;
     overflow: hidden;
+    background: url('textures/background.jpeg');
 }
 
 #playerinfo {
@@ -22,22 +23,23 @@ body {
     height: 15%;
     display: flex;
     justify-content: center;
+    background: rgba(255, 255, 255, 0.5);
 }
 
 #self {
     height: 85%;
     width: 100%;
+    background: linear-gradient(to right, rgb(250, 33, 33, 0.5), rgb(33, 33, 250, 0.5));
 }
 
 .player {
-    border: solid 1px black;
-    box-sizing: border-box;
     height: 100%;
     width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    text-shadow: 1px 1px white;
 }
 
 #start {
@@ -64,6 +66,7 @@ b {
 b a {
     font-size: 15px;
     color: rgb(129, 129, 129);
+    text-shadow: none;
 }
 
 .disconnected {
@@ -73,13 +76,12 @@ b a {
 #topcard {
     width: 40%;
     height: 100%;
-    border: 1px solid black;
-    box-sizing: border-box;
     float: left;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    text-shadow: 1px 1px white;
 }
 
 #topcard h1 {
@@ -94,18 +96,32 @@ b a {
 }
 
 #hand {
-    border: 1px solid black;
-    box-sizing: border-box;
-    width: 60%;
+    width: 59%;
     height: 100%;
     float: left;
+    border-left: 1px solid white;
 }
 
 #cards-row {
     width: 100%;
-    height: 95%;
-    margin-top: 5%;
+    height: 45%;
+    margin-top: 4%;
+    border-bottom: 1px solid white;
     position: relative;
+}
+
+#buttons {
+    width: 100%;
+    height: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#buttons button {
+    font-size: 50px;
+    height: 100px;
+    width: 200px;
 }
 
 .cards {

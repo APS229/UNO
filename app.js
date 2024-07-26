@@ -23,6 +23,10 @@ io.on('connection', socket => {
     socket.on('start', () => {
         Game.startGame();
     });
+
+    socket.on('playCard', card => {
+        Game.playCard(socket.id, card);
+    });
 });
 
 server.listen(5500, () => {
